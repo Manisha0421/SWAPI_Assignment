@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "4564eff9-f7b1-4be5-b7c7-ea83af986bc1",
+		"name": "Assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6506001",
+		"_collection_link": "https://www.postman.com/speeding-escape-835858/workspace/apitutorial/collection/6506001-4564eff9-f7b1-4be5-b7c7-ea83af986bc1?action=share&source=collection_link&creator=6506001"
+	},
+	"item": [
+		{
+			"name": "people list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Verify status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify response body has valid structure\",function(){\r",
+							"  pm.response.to.be.json;\r",
+							"  pm.expect(jsonData).to.have.property(\"count\").to.be.a(\"number\");\r",
+							"  pm.expect(jsonData.count).to.be.greaterThan(0);\r",
+							"  pm.expect(jsonData).to.have.property(\"next\");\r",
+							"  pm.expect(jsonData).to.have.property(\"previous\");\r",
+							"  pm.expect(jsonData).to.have.property(\"results\").to.be.an(\"array\").that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify that each character contains expected keys\", function(){\r",
+							"    jsonData.results.forEach((item) => {\r",
+							"        pm.expect(item).to.have.property(\"name\").to.be.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"height\").to.be.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"mass\").to.be.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"gender\").to.be.a(\"string\");\r",
+							"        pm.expect(item).to.have.property(\"films\").to.be.an(\"array\").that.is.not.empty;\r",
+							"        pm.expect(item).to.have.property(\"vehicles\").to.be.an(\"array\");\r",
+							"        pm.expect(item).to.have.property(\"starships\").to.be.an(\"array\");\r",
+							"        pm.expect(item).to.have.property(\"url\").to.be.a(\"string\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"//generating the person Id randomly to use in individual request\r",
+							"let randomPerson = Math.floor(Math.random() * jsonData.results.length) + 1;\r",
+							"let name = jsonData.results[randomPerson-1].name;\r",
+							"pm.collectionVariables.set(\"personId\", randomPerson);\r",
+							"pm.collectionVariables.set(\"personName\", name);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://swapi.dev/api/people/",
+					"protocol": "https",
+					"host": [
+						"swapi",
+						"dev"
+					],
+					"path": [
+						"api",
+						"people",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "individual character",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Character is \" + pm.collectionVariables.get(\"personName\"), function () {\r",
+							"   pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"personName\"));   \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Character should have key details\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"birth_year\");\r",
+							"    pm.expect(jsonData).to.have.property(\"gender\");\r",
+							"    pm.expect(jsonData).to.have.property(\"films\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Films list should not be empty\", function () {\r",
+							"    pm.expect(jsonData.films).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.films.length).to.be.above(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"console.clear();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://swapi.dev/api/people/{{personId}}",
+					"protocol": "https",
+					"host": [
+						"swapi",
+						"dev"
+					],
+					"path": [
+						"api",
+						"people",
+						"{{personId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "personId",
+			"value": ""
+		},
+		{
+			"key": "personName",
+			"value": ""
+		}
+	]
+}
